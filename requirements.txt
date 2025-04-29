@@ -1,0 +1,6 @@
+tensorflow-cpu
+pandas 
+numpy
+ast
+matplotlib
+plotly
