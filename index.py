@@ -19,6 +19,7 @@ import pandas as pd
 import ast
 from tensorflow.keras.utils import plot_model
 import  matplotlib.pyplot as plt
+from pareto_generate import pareto
 
 
 
@@ -241,10 +242,13 @@ class run_to_build_pareto_front:
     def generte_pareto_after_model_built(self,path_to_read_metric,directory_path):
         pareto_generation(path_to_read_metric,dierctory_path=directory_path).genearte()
 
+    def generate_pareto(self,path):
+        pareto(path=path).gen()
+
 
 
 if __name__ == "__main__":
 
     run = run_to_build_pareto_front("hyper_paremetes.xlsx")
     run.build_model_and_fit(20)
-    run.generte_pareto_after_model_built("/kaggle/working/metrics_log.csv", directory_path="pareto_outputs")
+    #run.generate_pareto("1.csv")

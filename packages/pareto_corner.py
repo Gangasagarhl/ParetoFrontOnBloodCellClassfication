@@ -99,3 +99,7 @@ class pareto_generation:
 
             fig.write_html(f"{self.output_directory}/{metric}_pareto_plot.html")
             fig.write_image(f"{self.output_directory}/{metric}_pareto_plot.png")
+
+if __name__ =="__main__":
+    par =  pareto_generation(file_path="2.csv", dierctory_path="pareto_outputs")
+    par.genearte()

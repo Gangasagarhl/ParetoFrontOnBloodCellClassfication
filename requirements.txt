@@ -6,4 +6,5 @@ matplotlib
 plotly
 nbformat
 pydot
+openpyxl
 kaleido
