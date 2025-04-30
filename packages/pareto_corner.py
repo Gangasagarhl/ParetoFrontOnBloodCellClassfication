@@ -87,7 +87,7 @@ class pareto_generation:
 
             )
 
-            fig.show()
+            #fig.show()
 
             # Save plots
             

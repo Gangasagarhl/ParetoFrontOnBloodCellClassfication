@@ -5,7 +5,7 @@ class save:
     def __init__(self):
         pass
 
-    def save_the_row_to_csv_file(train_loss, train_acc, val_loss, val_acc, model_size, filename="metrics_log.csv"):
+    def save_the_row_to_csv_file(self,train_loss, train_acc, val_loss, val_acc, model_size, filename="metrics_log.csv"):
         """
         Appends a row of metrics to a CSV file. If the file doesn't exist,
         creates it and writes a header first.

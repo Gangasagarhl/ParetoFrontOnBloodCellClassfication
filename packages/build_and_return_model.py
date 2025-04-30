@@ -7,7 +7,7 @@ from tensorflow.keras.layers import (
     BatchNormalization,
     Dropout,
     Flatten,
-    Dense
+    Dense, MaxPooling2D, GlobalAveragePooling2D
 )
 
 
@@ -42,13 +42,16 @@ class build_model:
                 model.add(Conv2D(filters, (k, k),
                                 activation='relu',
                                 input_shape=(224,224,1)))
+                model.add(MaxPooling2D(pool_size=(2,2)))
             else:
                 model.add(Conv2D(filters, (k, k), activation='relu'))
-            model.add(BatchNormalization())
-            model.add(Dropout(0.3))
+                model.add(MaxPooling2D(pool_size=(2,2)))
+                model.add(BatchNormalization())
+                model.add(Dropout(0.3))
 
         # flatten before Dense
-        model.add(Flatten())
+        
+        model.add(GlobalAveragePooling2D())
 
         # — Dense blocks —
         for neurons in list_number_of_nuerons_in_each_layer:

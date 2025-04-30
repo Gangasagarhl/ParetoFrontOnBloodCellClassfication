@@ -1,6 +1,9 @@
 tensorflow-cpu
 pandas 
 numpy
-ast
+#AST
 matplotlib
 plotly
+nbformat
+pydot
+kaleido

@@ -7,17 +7,139 @@ STEPS INVOLVED
 5. Then save the results into csv
 6. Then lad the data in the csv, and make the pareto front
 """
-from packages.build_and_return_model import build_model as BM #no parameters at init 
+
+
+#from packages.build_and_return_model import build_model as BM #no parameters at init 
 from packages.pareto_corner import pareto_generation  #csv file path, output directot
 from packages.return_model_size import model_size as MS
 from packages.save_data_into_csv_for_pareto import save 
 from packages.save_summary import save_summary_file  #output directory to save the summary 
-from packages.load_dataset import load_data
+#from packages.load_dataset import load_data
 import pandas as pd
 import ast
 from tensorflow.keras.utils import plot_model
 import  matplotlib.pyplot as plt
 
+
+
+
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.utils import plot_model
+
+from tensorflow.keras.layers import (
+    Conv2D,
+    BatchNormalization,
+    Dropout,
+    Flatten,
+    Dense, MaxPooling2D, GlobalAveragePooling2D
+)
+
+
+class load_data: 
+
+    def __init__(self, train_data_path, validation_data_path, batch_size=32, image_height=224, image_width=224, seed=123):
+        self.TRAIN_ROOT = train_data_path
+        self.VALIDATION_ROOT = validation_data_path
+        self.batch_size = batch_size
+        self.img_h = image_height
+        self.img_w = image_width
+        self.seed = seed
+
+    def to_grayscale(self, image, label):
+        image = tf.image.rgb_to_grayscale(image)
+        return image, label
+
+    def load_data(self):
+        train_ds_raw = tf.keras.preprocessing.image_dataset_from_directory(
+            self.TRAIN_ROOT,
+            seed=self.seed,
+            image_size=(self.img_h, self.img_w),
+            batch_size=self.batch_size,
+        )
+        val_ds_raw = tf.keras.preprocessing.image_dataset_from_directory(
+            self.VALIDATION_ROOT,
+            seed=self.seed,
+            image_size=(self.img_h, self.img_w),
+            batch_size=self.batch_size,
+        )
+
+        # Get class names BEFORE mapping to grayscale
+        class_names = train_ds_raw.class_names
+
+        # Convert datasets to grayscale
+        train_ds = train_ds_raw.map(self.to_grayscale)
+        val_ds = val_ds_raw.map(self.to_grayscale)
+
+        return train_ds, val_ds, class_names
+
+
+
+
+
+
+
+
+class BM:
+    def __init__(self):
+        pass
+
+    def build_model(self,
+        dense_layers: int,
+        list_number_of_nuerons_in_each_layer: list[int],
+        Number_of_convoluational_filters: list[int],
+        kernel_size: list[int]
+    ) -> Sequential:
+        """
+        Builds a Sequential CNN + Dense model.
+        
+        Args:
+        dense_layers: number of Dense layers (also equals number of classes/output units).
+        list_number_of_nuerons_in_each_layer: neurons in each Dense layer, length == dense_layers.
+        Number_of_convoluational_filters: list of filters for each Conv2D block.
+        kernel_size: list of kernel sizes (ints) for each Conv2D block, same length as filters list.
+        
+        Returns:
+        A compiled tf.keras.Sequential model.
+        """
+        model = Sequential()
+
+        # — Convolutional blocks —
+        for idx, (filters, k) in enumerate(zip(Number_of_convoluational_filters, kernel_size)):
+            if idx == 0:
+                # first conv needs input_shape
+                model.add(Conv2D(filters, (k, k),
+                                activation='relu',
+                                input_shape=(224,224,1)))
+                model.add(MaxPooling2D(pool_size=(2,2)))
+            else:
+                model.add(Conv2D(filters, (k, k), activation='relu'))
+                model.add(MaxPooling2D(pool_size=(2,2)))
+                model.add(BatchNormalization())
+                model.add(Dropout(0.3))
+
+        # flatten before Dense
+        
+        model.add(GlobalAveragePooling2D())
+
+        # — Dense blocks —
+        for neurons in list_number_of_nuerons_in_each_layer:
+            model.add(Dense(neurons, activation='relu'))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.5))
+
+    
+        model.add(Dense(4, activation='softmax'))
+
+        # compile
+        model.compile(
+            optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=['accuracy', 'loss']
+        )
+        
+        return model
 
 
 
@@ -42,8 +164,9 @@ class run_to_build_pareto_front:
         
 
         train_data, val_data, class_names = load_data(
-            train_data_path="Blood_cell_dataset/TRAIN/",
-            validation_data_path="Blood_cell_dataset/TEST/"
+            train_data_path="Blood_cell_dataset/TRAIN",
+            validation_data_path="Blood_cell_dataset/TEST",
+            batch_size = 8
         ).load_data()
 
         count =  0
@@ -82,7 +205,7 @@ class run_to_build_pareto_front:
 
                 sv.save_the_row_to_csv_file(final_train_loss, final_train_acc, final_val_loss, final_val_acc, model_size=size_of_the_model)
 
-
+                """
 
                 plot_model(
                 model,
@@ -93,7 +216,7 @@ class run_to_build_pareto_front:
                 expand_nested=True,    # If you're using nested models
                 rankdir='TB'           # Layout: TB=top-bottom, LR=left-right
                 )
-
+                
                 # 8. (Optional) Plot curves
                 plt.figure()
                 plt.plot(history.history['loss'],  label='train loss')
@@ -105,7 +228,7 @@ class run_to_build_pareto_front:
                 plt.legend()
                 plt.title('Training & Validation Metrics')
                 plt.show()
-
+                """
 
                 count += 1
             
@@ -123,5 +246,5 @@ class run_to_build_pareto_front:
 if __name__ == "__main__":
 
     run = run_to_build_pareto_front("hyper_paremetes.xlsx")
-    run.build_model_and_fit(10)
-    run.generte_pareto_after_model_built("metrics_log.csv", directory_path="pareto_outputs")
+    run.build_model_and_fit(20)
+    run.generte_pareto_after_model_built("/kaggle/working/metrics_log.csv", directory_path="pareto_outputs")
