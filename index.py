@@ -20,7 +20,7 @@ import ast
 from tensorflow.keras.utils import plot_model
 import  matplotlib.pyplot as plt
 from pareto_generate import pareto
-
+#from pareto_generate import pareto
 
 
 
@@ -251,4 +251,4 @@ if __name__ == "__main__":
 
     run = run_to_build_pareto_front("hyper_paremetes.xlsx")
     run.build_model_and_fit(20)
-    #run.generate_pareto("1.csv")
+    #pareto("metrics_log.csv")
