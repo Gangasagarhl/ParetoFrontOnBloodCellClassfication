@@ -250,5 +250,5 @@ if __name__ == "__main__":
     run = run_to_build_pareto_front("hyper_paremetes.xlsx")
     run.build_model_and_fit(1)
     
-    pareto("metrics_log_epoch_30.csv").gen()
+    pareto("metrics_log.csv").gen()
 
