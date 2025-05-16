@@ -29,10 +29,10 @@ class pareto:
 
     def gen(self):
         plots = [
-            ("train_loss", True, "Train Loss vs Model Size", "Train Loss"),
-            ("train_accuracy", False, "Train Accuracy vs Model Size", "Train Accuracy"),
-            ("val_loss", True, "Validation Loss vs Model Size", "Validation Loss"),
-            ("val_accuracy", False, "Validation Accuracy vs Model Size", "Validation Accuracy")
+            #("train_loss", True, "Train Loss vs Model Size", "Train Loss"),
+            ("train_accuracy", False, "Accuracy vs Model Size", "Accuracy"),
+            #("val_loss", True, "Validation Loss vs Model Size", "Validation Loss"),
+            #("val_accuracy", False, "Validation Accuracy vs Model Size", "Validation Accuracy")
         ]
 
         output_directory = "pareto_outputs"

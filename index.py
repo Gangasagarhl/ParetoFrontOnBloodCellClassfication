@@ -165,8 +165,8 @@ class run_to_build_pareto_front:
         
 
         train_data, val_data, class_names = load_data(
-            train_data_path="Blood_cell_dataset/TRAIN",
-            validation_data_path="Blood_cell_dataset/TEST",
+            train_data_path="Blood_cell_dataset/TEST_SIMPLE",
+            validation_data_path="Blood_cell_dataset/TEST_SIMPLE",
             batch_size = 8
         ).load_data()
 
@@ -186,8 +186,10 @@ class run_to_build_pareto_front:
                         loss='sparse_categorical_crossentropy',
                         metrics=['accuracy']
                               )
-                
+                size_of_the_model = model_size.get_model_size_mb(model)
+                print(i,j,k,self.kernel_size[0], size_of_the_model,"Done")
                
+            
                 history = model.fit(
                     train_data,
                     validation_data=val_data,
@@ -202,7 +204,7 @@ class run_to_build_pareto_front:
                 final_train_acc  = history.history['accuracy'][-1]
                 final_val_loss   = history.history['val_loss'][-1]
                 final_val_acc    = history.history['val_accuracy'][-1]
-                size_of_the_model = model_size.get_model_size_mb(model)
+                
 
                 sv.save_the_row_to_csv_file(final_train_loss, final_train_acc, final_val_loss, final_val_acc, model_size=size_of_the_model)
 
@@ -233,11 +235,7 @@ class run_to_build_pareto_front:
 
                 count += 1
             
-
-
-                print(i,j,k,self.kernel_size[0], "Done")
                 
-
 
     def generte_pareto_after_model_built(self,path_to_read_metric,directory_path):
         pareto_generation(path_to_read_metric,dierctory_path=directory_path).genearte()
@@ -250,5 +248,7 @@ class run_to_build_pareto_front:
 if __name__ == "__main__":
 
     run = run_to_build_pareto_front("hyper_paremetes.xlsx")
-    run.build_model_and_fit(20)
-    #pareto("metrics_log.csv")
+    run.build_model_and_fit(30)
+    
+    pareto("metrics_log_epoch_30.csv").gen()
+
