@@ -1,103 +1,109 @@
-````markdown
-# Pareto Front Visualization: Model Size vs Accuracy
+# Multi-objective Optimization for Blood Cell Classification
 
-This repository helps you visualize the **Pareto Front** generated from training different models, comparing **Model Size (before training)** and **Accuracy** across a configurable number of epochs.
+- **Kaggle Notebook**: [Blood Cell Pareto Front](https://www.kaggle.com/code/harshithgangasgarhl/blood-cell-pareto-front)
+- **Code**: [GitHub Repository](https://github.com/Gangasagarhl/ParetoFrontOnBloodCellClassfication)
+- **Dataset**: [Blood Cell Images on Kaggle](https://www.kaggle.com/datasets/paultimothymooney/blood-cells/data)
 
-##  Dataset
+## Project Setup
 
+### Dataset
 The dataset required for training and evaluation is already included in the repository.
 
-##  Required Libraries
-
-All the necessary libraries are listed in the `requirements.txt` file.
-
-##  Getting Started
-
+### Getting Started
 Follow the steps below to set up and run the project:
 
-### 1. Clone or Download the Repository
+> Notes:
+> - Ensure you have **Python 3.7** or above installed.
+> - We recommend using a virtual environment to avoid conflicts.
 
-```bash
-git clone <your-repo-url>
-cd <cloned-folder>
-````
+1. Clone or Download the Repository
+2. Create a Virtual Environment
+    - `python -m venv myenv`
+3. Activate the Virtual Environment
+    - `source myenv/bin/activate`
+4. Install Required Libraries
+    - `pip install -r requirements.txt`
+5. Choose the Number of Epochs
+    ```py
+    # edit "index.py" pass argument, how many epochs
+    run.build_model_and_fit(1)
+    ```
+6. Run the Script
+    - `python3 index.py`
 
-Alternatively, download the ZIP archive from GitHub, extract it, and navigate into the folder:
+### Output
+- A **Pareto Front** plot will be generated, illustrating the trade-off between **Model Size (before training)** and **Accuracy**.
+- All training metrics are logged to:
 
-```bash
-cd <extracted-folder>
-```
+**`metrics_log.csv`**
 
-### 2. Create a Virtual Environment
 
-```bash
-python -m venv menv
-```
 
-### 3. Activate the Virtual Environment
+## Summary
 
-* **Linux/macOS**:
+Blood cell classification is a critical task in medical diagnostics, enabling early detection of diseases such as leukemia, anemia, and infections. Traditional methods rely on manual microscopy, which is time-consuming and prone to human error. **Convolutional Neural Networks (CNNs)** have emerged as powerful tools for automating this process, offering high accuracy in classifying cell subtypes like Eosinophils, Lymphocytes, Monocytes, and Neutrophils.
 
-  ```bash
-  source menv/bin/activate
-  ```
+However, deploying such models in real-world medical settings introduces practical constraints. Clinics and hospitals, particularly in resource-limited regions, often rely on edge devices (e.g., portable diagnostic tools) with limited computational power and storage. This necessitates a trade-off between **model accuracy** and **deployment feasibility**.
 
-* **Windows**:
+## Approach: Grid Search
+We employed grid search to explore hyperparameter combinations exhaustively. This method involves:
+- Defining discrete values for hyperparameters (e.g., dense layers, convolutional filters).
+- Training models for all possible combinations.
+- Evaluating performance metrics (accuracy, model size).
 
-  ```bash
-  menv\Scripts\activate
-  ```
 
-### 4. Install Required Libraries
+## Hyperparameter Space (CNN Architecture)
+Edit `hyper_paremetes.xlsx` as per your requirements.
 
-```bash
-pip install -r requirements.txt
-```
+| Parameter | Values  |
+|-----------|---------|
+| **Dense Layers** | 2, 3, 4, 5, 6, 7 |
+| **Neurons per Dense Layer** | [250, 300], [380, 430, 477], [200, 210, 300, 350], [70, 95, 120, 100, 4], [150, 208, 300, 350, 405, 450], [300, 250, 200, 180, 175, 160, 150] |
+| **Convolutional Filters** | [70, 80, 100, 140, 180, 220], [80, 100, 160, 200, 210, 220], [120, 140, 160, 180, 200, 256], [128, 150, 180, 200, 256] |
+| **Kernel Sizes** | 7, 5, 5, 3, 3, 3 |
 
-### 5. Choose the Number of Epochs
+## Numerical Results
 
-Open `index.py` and modify the `NUM_EPOCHS` variable to set your desired number of training epochs:
+### Experimental Setup
+- **Dataset**: [Blood Cell Images](https://www.kaggle.com/datasets/paultimothymooney/blood-cells) (12,500 images, 4 classes).
+- **Training Protocols**:  
+  - **10 Epochs**: Simulates resource-constrained training.  
+  - **30 Epochs**: Allows better convergence.  
+- **GPU**: NVIDIA P100 on Kaggle Notebooks.
 
-```python
-NUM_EPOCHS = <your_desired_number>
-```
+## Pareto Frontiers:
 
-### 6. Run the Script
+### 10-Epoch Training
 
-```bash
-python index.py
-```
+![](/pareto_outputs/train_accuracy_vs_model_size_epochs_10.png)
 
-##  Output
+**Key Observations**:
 
-* A **Pareto Front** plot will be generated, illustrating the trade-off between **Model Size (before training)** and **Accuracy**.
-* All training metrics are logged to:
+- **Pareto Front**: 12 non-dominated points.  
+- **Optimal Models**:  
+  - **4.36 MB**: 82.3% accuracy (suitable for edge deployment).  
+  - **10.11 MB**: 95.2% accuracy (theoretical upper bound).  
+- **Diminishing Returns**: Accuracy plateaus beyond 8 MB.
 
-  ```text
-  metrics_log.csv
-  ```
+### 30-Epoch Training
 
-##  File Structure
+![](/pareto_outputs/train_accuracy_vs_model_size_epochs_30.png)
 
-```text
-├── dataset/                 # Dataset used for training
-├── index.py                 # Main script to run training and visualization
-├── requirements.txt         # Python dependencies
-├── metrics_log.csv          # Output metrics file
-└── README.md                # Project documentation (this file)
-```
+**Key Observations**:
 
-##  Notes
+- **Pareto Front**: 15 non-dominated points.  
+- **Optimal Models**:  
+  - **6.2 MB**: 91.8% accuracy (balanced choice).  
+  - **8.42 MB**: 94.7% accuracy (high-resource settings).  
+- **Improved Convergence**: Longer training reduces accuracy variance.
 
-* Ensure you have **Python 3.7** or above installed.
-* We recommend using a virtual environment to avoid conflicts.
 
-##  Troubleshooting
+### Why Training Accuracy?
+Due to computational constraints, validation accuracy was not used for Pareto analysis. This is because achieving reliable validation metrics would require training all candidate models for an impractically large number of epochs. As a proof of concept, we selected a Pareto-optimal model from our grid search results and conducted extended training with significantly more epochs. This experiment achieved **86.27% validation accuracy**, demonstrating that our training-optimized models retain the potential for robust generalization when given sufficient computational resources.
 
-If you run into issues:
+## Future Work
 
-1. Verify your Python and `pip` versions.
-2. Confirm that all dependencies in `requirements.txt` are installed.
-3. Make sure the `dataset/` directory is present and correctly structured.
-
+- Incorporate **validation accuracy**}** and **inference latency**}** as objectives.
+- Explore **Bayesian Optimization**}** for efficient hyperparameter search.
+- Apply **quantization**}** and **pruning**}** to further compress models.
 
