@@ -82,7 +82,7 @@ Generated using [metrics_log_epch_10.csv](/metrics_log_epch_10.csv)
 
 **Key Observations**:
 
-- **Pareto Front**: 12 non-dominated points.  
+- **Pareto Front**: 4 non-dominated points.  
 - **Optimal Models**:  
   - **4.36 MB**: 82.3% accuracy (suitable for edge deployment).  
   - **10.11 MB**: 95.2% accuracy (theoretical upper bound).  
@@ -96,7 +96,7 @@ Generated using [metrics_log_epch_30.csv](/metrics_log_epch_30.csv)
 
 **Key Observations**:
 
-- **Pareto Front**: 15 non-dominated points.  
+- **Pareto Front**: 6 non-dominated points.  
 - **Optimal Models**:  
   - **6.2 MB**: 91.8% accuracy (balanced choice).  
   - **8.42 MB**: 94.7% accuracy (high-resource settings).  
