@@ -1,11 +1,11 @@
 """
-STEPS INVOLVED
-1. Load the data set for training and validating, which return the train and valid
-2. download the hyper parameters using the grid search
-3. For each and every set of hyper parameters , make the model/build the model
-4. Then Build the model, using epochs
-5. Then save the results into csv
-6. Then lad the data in the csv, and make the pareto front
+STEPS INVOLVED:
+1. Load the training and validation datasets, returning the train and validation splits.
+2. Retrieve hyperparameters from the predefined grid search configuration.
+3. For each hyperparameter set, construct and compile the model architecture.
+4. Train the model for the specified number of epochs.
+5. Save the training/validation results (loss, accuracy, model size) to a CSV file.
+6. Generate a Pareto front analysis using the compiled CSV data to identify optimal trade-offs.
 """
 
 
@@ -17,6 +17,7 @@ from packages.save_summary import save_summary_file  #output directory to save t
 #from packages.load_dataset import load_data
 import pandas as pd
 import ast
+import os
 from tensorflow.keras.utils import plot_model
 import  matplotlib.pyplot as plt
 from pareto_generate import pareto
@@ -171,6 +172,8 @@ class run_to_build_pareto_front:
         ).load_data()
 
         count =  0
+        total_models = total_itr = len(self.number_of_dense_layers[0]) * len(self.kernel_size_varied[0])
+
         buildModel = BM()
         num_classes =  len(class_names)
         ssf = save_summary_file("model_summaries")
@@ -179,7 +182,9 @@ class run_to_build_pareto_front:
         #loading the hyper parameters to make the things 
         for i,j in zip(self.number_of_dense_layers[0],self.number_of_nuerons_in_each_dense_layers[0]):
             for k in self.kernel_size_varied[0]:
-
+                print("\n\n====================================================")
+                print(f"\t\tWorking on model {count+1}/{total_models}")
+                print("====================================================\n\n")
 
                 model =  buildModel.build_model(i,j,k,self.kernel_size[0])
                 model.compile( optimizer='adam',
@@ -187,7 +192,14 @@ class run_to_build_pareto_front:
                         metrics=['accuracy']
                               )
                 size_of_the_model = model_size.get_model_size_mb(model)
-                print(i,j,k,self.kernel_size[0], size_of_the_model,"Done")
+                
+                print("\n---------------- Model Configuration ----------------")
+                print(f"Number of Dense Layers     : {i}")
+                print(f"Neurons in Dense Layers    : {j}")
+                print(f"Variable Kernel Size       : {k}")
+                print(f"Fixed Kernel Size          : {self.kernel_size[0]}")
+                print(f"Model Size (in MB)         : {size_of_the_model:.2f}")
+                print("------------------------------------------------------\n")
                
             
                 history = model.fit(
@@ -248,7 +260,14 @@ class run_to_build_pareto_front:
 if __name__ == "__main__":
 
     run = run_to_build_pareto_front("hyper_paremetes.xlsx")
+
+    with open("metrics_log.csv", "w") as f:
+        f.write("train_loss,train_accuracy,val_loss,val_accuracy,model_size(MB)\n")
+
+
     run.build_model_and_fit(1)
     
     pareto("metrics_log.csv").gen()
+
+    print("\n\nAll Operations Completed.")
 
