@@ -25,13 +25,14 @@ Follow the steps below to set up and run the project:
     - `pip install -r requirements.txt`
 5. Choose the Number of Epochs
     ```py
-    # edit "index.py" pass argument, how many epochs
+    # edit "index.py", pass argument to this function call at bottom
+    # how many epochs per model (no need to change for basic testing)
     run.build_model_and_fit(1)
     ```
 6. Run the Script
     - `python3 index.py`
 
-### Output
+### Expected Output
 - A **Pareto Front** plot will be generated, illustrating the trade-off between **Model Size (before training)** and **Accuracy**.
 - All training metrics are logged to:
 
@@ -77,6 +78,8 @@ Edit `hyper_paremetes.xlsx` as per your requirements.
 
 ![](/pareto_outputs/train_accuracy_vs_model_size_epochs_10.png)
 
+Generated using [metrics_log_epch_10.csv](/metrics_log_epch_10.csv)
+
 **Key Observations**:
 
 - **Pareto Front**: 12 non-dominated points.  
@@ -86,6 +89,8 @@ Edit `hyper_paremetes.xlsx` as per your requirements.
 - **Diminishing Returns**: Accuracy plateaus beyond 8 MB.
 
 ### 30-Epoch Training
+
+Generated using [metrics_log_epch_30.csv](/metrics_log_epch_30.csv)
 
 ![](/pareto_outputs/train_accuracy_vs_model_size_epochs_30.png)
 
